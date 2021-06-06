@@ -12,7 +12,7 @@ import seaborn as sns
 
 # Load the temperature data onto a pandas data frame
 temp_data = pd.read_csv("data/qhi_temp_2017.csv")
-temp_data.rename({"year": "Year"}, axis=1,qhi_temp_2017 inplace=True)
+temp_data.rename({"year": "Year"}, axis=1, inplace=True)
 
 # Load the phenology data onto a pandas data frame
 phen_data = pd.read_csv("data/qhi_phen_with_before_2017.csv")
@@ -34,6 +34,7 @@ s_arctica = phen_data[phen_data["Spp"] == "SALARC"].copy()
 # 5 - is for senescence
 
 # Rounding up to the nearest interger
+# I took the values to be the mean between PX_before and PX
 s_arctica["P2_mean"] = round((s_arctica["P2"]+ s_arctica["P2_before"])/2)
 s_arctica["P5_mean"] = round((s_arctica["P5"]+ s_arctica["P5_before"])/2)
 s_arctica["Growing_season_len"] = s_arctica["P5_mean"] - s_arctica["P2_mean"]
@@ -42,8 +43,6 @@ s_arctica["Growing_season_len"] = s_arctica["P5_mean"] - s_arctica["P2_mean"]
 s_arctica_summary = s_arctica[["Year", "P2_mean", "P5_mean", "Growing_season_len"]].groupby("Year").mean()
 s_arctica_summary.reset_index(inplace=True)
 
-#
-#sns.jointplot(x="Year", y="Growing_season_len", data=s_arctica_summary)
 
 # Merging the temperature data and the summary data
 plot_vals_rough = pd.merge(temp_data, s_arctica_summary, how="outer", on="Year")
@@ -77,6 +76,7 @@ fig_3.savefig("figures/figure_3.png")
 
 plt.show()
 
+# I export the data frames to use them in R
 plot_1.to_csv("my_data_frames/growing_season_data.csv", index=False)
 plot_2.to_csv("my_data_frames/year_vs_avg_temp.csv", index=False)
 
